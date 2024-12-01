@@ -1,6 +1,6 @@
 function addData() {
     
-    fetch('http://localhost:3000/add', {
+    fetch('/add', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

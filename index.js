@@ -3,10 +3,6 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const app = express();
 
-const cors = require('cors');
-app.use(cors());
-
-
 // Middleware
 app.use(bodyParser.json()); // Add this to parse JSON payloads
 app.use(bodyParser.urlencoded({ extended: true })); // For URL-encoded data
@@ -60,4 +56,3 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
