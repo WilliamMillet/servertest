@@ -1,28 +1,39 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
+const fs = require('fs');
 const app = express();
 
 // Middleware
-app.use(bodyParser.json()); // Add this to parse JSON payloads
-app.use(bodyParser.urlencoded({ extended: true })); // For URL-encoded data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public')); // Serve static files (like your HTML)
 
 // MySQL Connection
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'my_database',
+    host: 'localhost',     // Your database host
+    user: 'root',          // Your database user
+    password: 'password',  // Your database password
+    database: 'my_database', // Your database name
 });
 
-// Connect to MySQL
+// Apply the schema on connection
 connection.connect((err) => {
     if (err) {
         console.error('Error connecting to the database:', err.message);
         return;
     }
     console.log('Connected to the MySQL database!');
+
+    // Read and execute schema.sql
+    const schema = fs.readFileSync('schema.sql', 'utf8');
+    connection.query(schema, (err) => {
+        if (err) {
+            console.error('Error applying schema:', err.message);
+        } else {
+            console.log('Database schema applied successfully!');
+        }
+    });
 });
 
 // Endpoint to Add Data
@@ -38,6 +49,7 @@ app.post('/add', (req, res) => {
         res.json({ ok: true, message: 'Data added successfully!' });
     });
 });
+
 // Endpoint to Fetch Data
 app.get('/fetch', (req, res) => {
     const query = 'SELECT * FROM my_table';
@@ -52,7 +64,7 @@ app.get('/fetch', (req, res) => {
 });
 
 // Start the Server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
